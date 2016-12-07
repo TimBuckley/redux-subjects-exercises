@@ -20,36 +20,34 @@ import ReactDOM from 'react-dom'
 import * as styles from './lib/styles'
 import data from './lib/data'
 
+
+
+
+
 class Tabs extends React.Component {
   static propTypes = {
-    data: React.PropTypes.array.isRequired
+    tabs: React.PropTypes.array.isRequired,
+    activeTabIndex: React.PropTypes.number.isRequired,
+    onActivate: React.PropTypes.func.isRequired
   }
 
-  state = {
-    activeTabIndex: 0
-  }
-
-  handleTabClick(activeTabIndex) {
-    this.setState({ activeTabIndex })
-  }
-
-  renderTabs() {
-    return this.props.data.map((tab, index) => {
-      const style = this.state.activeTabIndex === index ?
+  renderTabs(tabs, activeTabIndex, onActivate) {
+    return tabs.map((tab, index) => {
+      const style = activeTabIndex === index ?
         styles.activeTab : styles.tab
       return (
         <div
           className="Tab"
           key={tab.name}
           style={style}
-          onClick={() => this.handleTabClick(index)}
+          onClick={() => onActivate(index)}
         >{tab.name}</div>
       )
     })
   }
 
-  renderPanel() {
-    const tab = this.props.data[this.state.activeTabIndex]
+  renderPanel(tabs, activeTabIndex) {
+    const tab = tabs[activeTabIndex]
     return (
       <div>
         <p>{tab.description}</p>
@@ -58,13 +56,14 @@ class Tabs extends React.Component {
   }
 
   render() {
+    const { tabs, activeTabIndex, onActivate } = this.props
     return (
       <div style={styles.app}>
         <div style={styles.tabs}>
-          {this.renderTabs()}
+          {this.renderTabs(tabs, activeTabIndex, onActivate)}
         </div>
         <div style={styles.tabPanels}>
-          {this.renderPanel()}
+          {this.renderPanel(tabs, activeTabIndex)}
         </div>
       </div>
     )
@@ -72,11 +71,28 @@ class Tabs extends React.Component {
 }
 
 class App extends React.Component {
+  static propTypes = {
+    tabs: React.PropTypes.array.isRequired
+  }
+
+  state = {
+    activeTabIndex: 0
+  }
+
+  onActivateHandler = (activeTabIndex) => {
+    this.setState({ activeTabIndex })
+  }
+
   render() {
     return (
       <div>
         <h1>Props v. State</h1>
-        <Tabs ref="tabs" data={this.props.tabs}/>
+        <Tabs
+          ref="tabs"
+          tabs={this.props.tabs}
+          onActivate={this.onActivateHandler}
+          activeTabIndex={this.state.activeTabIndex}
+        />
       </div>
     )
   }
