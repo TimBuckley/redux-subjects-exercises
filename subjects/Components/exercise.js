@@ -14,7 +14,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-const styles = {}
+let styles = {}
 
 styles.tab = {
   display: 'inline-block',
@@ -34,18 +34,59 @@ styles.panel = {
   padding: 10
 }
 
-class Tabs extends React.Component {
+
+class Tab extends React.Component {
+  static propTypes = {
+    name: React.PropTypes.string,
+    active: React.PropTypes.bool
+  }
   render() {
+    const { name, active } = this.props
+    return (
+      <div
+        className="Tab"
+        style={active ? styles.activeTab : styles.tab}
+      >
+        {name}
+      </div>
+    )
+  }
+}
+
+
+class Tabs extends React.Component {
+  state = {
+    id: 0
+  }
+
+  static propTypes = {
+    data: React.PropTypes.array
+  }
+
+  onClickHandler(idx) {
+    this.setState({
+      id: idx
+    })
+  }
+
+  render() {
+    const { data } = this.props
+    const tabs = data.map((tab, idx) => (
+      <Tab
+        key={tab.id}
+        name={tab.name}
+        active={idx === this.state.id}
+        onClick={() => this.onClickHandler(idx)}
+      />
+    ))
     return (
       <div className="Tabs">
-        <div className="Tab" style={styles.activeTab}>
-          Active
-        </div>
-        <div className="Tab" style={styles.tab}>
-          Inactive
-        </div>
+        {tabs}
         <div className="TabPanel" style={styles.panel}>
-          Panel
+          {data
+            .filter((_e, idx) => this.state.id === idx)[0]
+            .description
+          }
         </div>
       </div>
     )
@@ -53,6 +94,9 @@ class Tabs extends React.Component {
 }
 
 class App extends React.Component {
+  static propTypes = {
+    countries: React.PropTypes.array
+  }
   render() {
     return (
       <div>
