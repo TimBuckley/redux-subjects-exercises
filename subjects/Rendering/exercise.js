@@ -28,10 +28,25 @@ const DATA = {
   ]
 }
 
+const isMexican = item => item.type === 'mexican'
+const alphabetical = sortBy('name')
+
 function Menu() {
   return (
     <div>
-      Open the console, you have failing tests.
+      <h1>{DATA.title}</h1>
+      <select onChange={(e) => console.log(e.target.value)}>
+        <option value="a">A</option>
+        <option value="b">B</option>
+        <option value="c">C</option>
+      </select>
+      <ul>
+        {DATA.items
+          .filter(isMexican)
+          .sort(alphabetical)
+          .map(item => <li key={item.id}>{item.name}</li>
+        )}
+      </ul>
     </div>
   )
 }
